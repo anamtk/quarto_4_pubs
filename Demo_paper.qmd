@@ -1,0 +1,113 @@
+---
+title: "**Title**: Using Quarto for scientific publications: Is it great and useful or harder than it needs to be??"
+format:
+  docx:
+    reference-doc: custom-reference-doc.docx
+editor: visual
+bibliography: references.bib
+csl: journal-of-applied-ecology.csl
+---
+
+**Authors:** Ana Miller-ter Kuile^1,2^
+
+**Author Affiliations:**
+
+1.  School of Informatics, Computing, and Cyber Systems, Northern Arizona University, Flagstaff, Arizona USA
+2.  USDA Forest Service Rocky Mountain Research Station, Flagstaff, Arizona USA
+
+\newpage
+
+```{r}
+#| echo: false
+#| include: false
+#| warning: false
+#| message: false
+
+
+package.list <- c("here", "tidyverse")
+
+## Installing them if they aren't already on the computer
+new.packages <- package.list[!(package.list %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+## And loading them
+for(i in package.list){library(i, character.only = T)}
+
+```
+
+# Formatting for submissions
+
+You need to have a [reference doc](https://quarto.org/docs/output-formats/ms-word-templates.html) with styles that you adapt. This needs to live in the folder where you are rendering your document. I've added one to this folder called `custom-reference-doc.docx`.
+
+I've played around a little bit with this custom references document and it *generally* formats things how I want them to be formatted for publication. I have not figured out if there is a way to format figure captions included in figures added in code chunks.
+
+# Math
+
+You can include both inline and display math using Quarto. You will need to download [tinytex](https://yihui.org/tinytex/) or some other LateX program to get equation rendering to work properly in Word.
+
+Then, I can code any equation that you could code in LaTeX, including equation numbering by giving the equation a "tag":
+
+$$
+\mu = \beta_0 + \sum_{j=1}^J\beta_j\cdot X_j
+$$ {#eq-1}
+
+Here, $\mu$ is dependent on a regression with an intercept and some slope parameters.
+
+These equations can be as complicated as you want, not just something that might be easy to code in Word equation editor
+
+$$
+LE(r_{ss},\alpha) = \frac{\rho C_{p}}{\gamma}\times\frac{\alpha e_{sat}(T_{soil}) - e_{a}}{r_{ah} +r_{ss} }
+$$ {#eq-2}
+
+# Citations
+
+You can import any citation with a DOI, from Zotero, or other reference manager. Citations will be added to a `references.bib` file that will live in the folder where you are rendering to. You can see that in the top of this document when looking at the `.qmd` version, I have specified that this is the references list for this document. I can add references in Quarto using the `Insert` button in the visual editor, or with some formatting in the source editor. [Way more information on citations](https://quarto.org/docs/authoring/citations.html) on the Quarto tutorial pages. On that website, you can see that you can include citations for things in the standard format [@wickham2019] or in referencing them in text without parentheses.
+
+You can also format citations according to a specific journal using the `.csl` file for that journal. There is a list of them that you can download on [this website](https://www.zotero.org/styles). You will need to save this style in the folder you are rendering to. I have saved the `journal-of-applied-ecology.csl` into the folder where we're rendering documents.
+
+Citations are added to the bottom of a document, which you can create a header for.
+
+# Putting figures in: from R script or images
+
+You can add figures in a variety of ways - including by calling actual R script in a code block in Quarto or by using some packages that let you work with visuals, like `knitr`. If you glance at the `.qmd` you can see how I added the following figure with `knitr::include_graphics()` and added a caption with the options you can provide in code chunks. You could also do a larger R workflow in a code chunk (call data, generate a figure with plotting functions) and the result would be the same. Just make sure to set `#|echo: false`, `#|message: false`, and `#|warning: false` in code chunks you want to just spit out a figure and no code or errors or messages.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Figure 1: Ecological data distributions be like. Art by Alliston Horst (allisonhorst.com)"
+
+
+knitr::include_graphics(here('notnormal.png'))
+```
+
+I haven't played around with caption formatting - but that could be an additional component of the `custom-reference-doc.docx` depending on the journal (some let you embed, so have you put images at the end and captions in their own page). There are also ways to change the amount of space around figures which I've Googled and implemented in the past successfully - but haven't done so for this document.
+
+# Things I haven't done yet
+
+Aligning equation numbers with the margin (a package [here](https://github.com/ute/mathjax3eqno) and a question on Stackoverflow [here](https://stackoverflow.com/questions/75230272/losing-equations-numbering-when-i-render-quarto-document-to-word)).
+
+A "hack" I have found is to put an equation into a table to align it:
+
+|                                                                                    |       |
+|:-----------------------------------------------------------------:|----:|
+| $E_d^{Soil} = \lambda(w \times LE(r_{ss},\alpha) + (1-w) \times LE(\beta,\alpha))$ | \(3\) |
+
+# Things that may be limiting/solutions
+
+1.  Working with collaborators who don't code
+2.  Incorporating comments/track changes into anything after a first draft (seem to be some things in development, but not fully formed yet)
+3.  Perhaps a hybrid workflow - an initial draft in Quarto and then stick to Word. Or, only writing and editing chunks (e.g., methods) in quarto and updating them as needed to make equations easier to code.
+4.  Quarto is actively being developed - which is great because there are lots of resources but also not so great because things change a lot through time and may change mid-way through a project. (for example, I pretty easily found the thing on tinytex and math for Word output in a previous Google search and couldn't find the same information now. Is this because the issue is fixed? I don't know.) In general, because so many languages are part of Quarto, sometimes the documentation is not as "user-friendly" as RMarkdown used to be.
+
+# Other resources
+
+[Quarto for scientists](https://qmd4sci.njtierney.com/)
+
+[General Quarto resources for journal formats](https://quarto.org/docs/journals/) (not Word, e.g., LaTeX and the like)
+
+# Use it yourself!
+
+The [GitHub](https://github.com/anamtk/quarto_4_pubs) for this tutorial is public and you can use it as a template for projects you're working on!
+
+# References
